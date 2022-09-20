@@ -27,7 +27,10 @@ public class DemoApplication implements CommandLineRunner {
 		//exemploIterable();
 		//exemploFlatMap();
 		//exemploString();
-		exemploComentarioUsuarioFlapMap();
+		//exemploComentarioUsuarioFlapMap();
+		exemploComentarioUsuarioZipWith();
+		exemploComentarioUsuarioZipWith2();
+
 
 	}
 	public void exemploIterable() throws Exception {
@@ -139,4 +142,34 @@ public class DemoApplication implements CommandLineRunner {
 			)
 			.subscribe(e -> log.info(e.toString()));
 	}
+	public void exemploComentarioUsuarioZipWith(){
+		Mono<Usuario> ususarioMono = Mono.fromCallable(() -> new Usuario("Paulo", "Gabriel"));
+
+		Mono<Comentarios> comentariosMono = Mono.fromCallable(() -> {
+			Comentarios comentiros = new Comentarios();
+			comentiros.addComentario("Que bonita");
+			comentiros.addComentario("Cara que legal essa fota");
+			comentiros.addComentario("Parabens");
+			return comentiros;
+		});
+		var usuarioComComentarios = ususarioMono.zipWith(comentariosMono, (usuario, comentarios) -> new UsuarioComentario(usuario, comentarios));
+		usuarioComComentarios.subscribe(e -> log.info(e.toString()));
+	}
+	public void exemploComentarioUsuarioZipWith2(){
+		Mono<Usuario> ususarioMono = Mono.fromCallable(() -> new Usuario("Paulo", "Gabriel"));
+
+		Mono<Comentarios> comentariosMono = Mono.fromCallable(() -> {
+			Comentarios comentiros = new Comentarios();
+			comentiros.addComentario("Que bonita");
+			comentiros.addComentario("Cara que legal essa fota");
+			comentiros.addComentario("Parabens");
+			return comentiros;
+		});
+		var usuarioComComentarios = ususarioMono.zipWith(comentariosMono)
+			.map(t -> {
+				return new UsuarioComentario(t.getT1(), t.getT2());
+			})
+			.subscribe(e -> log.info(e.toString()));
+	}
+	
 }
